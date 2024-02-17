@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+enum Enum {
+  ENUM_UNSPECIFIED = 0;
+  ENUM_ONE = 1;
+  ENUM_TWO = 2;
+}
+
+message Singulars {
+  bool bool = 1;
+  float float = 2;
+  double double = 3;
+  bytes bytes = 4;
+  string string = 5;
+  Enum enum = 6;
+  int32 int32 = 7;
+  int64 int64 = 8;
+  sint32 sint32 = 9;
+  sint64 sint64 = 10;
+  sfixed32 sfixed32 = 11;
+  sfixed64 sfixed64 = 12;
+  uint32 uint32 = 13;
+  uint64 uint64 = 14;
+  fixed32 fixed32 = 15;
+  fixed64 fixed64 = 16;
+  Singulars message = 17;
+}
+
+message Oneof {
+  oneof o {
+    bool bool = 1;
+    int32 int32 = 2;
+  }
+}
+
+message Lists {
+  repeated int32 singulars = 1;
+  repeated Singulars messages = 2;
+}
+
+message Maps {
+  map<bool, string> bools = 1;
+  map<int32, string> ints = 2;
+  map<uint32, string> uints = 3;
+  map<string, string> strings = 4;
+}
+
+message Redaction {
+  int32 val = 1 [debug_redact = true];
+}
+
+message OuterNested {
+  message InnerNested {}
+}

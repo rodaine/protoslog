@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+message User {
+  fixed64 id = 1;
+  string name = 2;
+  string email = 3 [debug_redact = true];
+  Location location = 4;
+  repeated string hobbies = 5;
+  map<string, PetType> pets = 6;
+  google.protobuf.Timestamp updated = 7;
+  google.protobuf.Duration best_100m_time = 8;
+}
+
+message Location {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+enum PetType {
+  PET_TYPE_UNSPECIFIED = 0;
+  PET_TYPE_DOG = 1;
+  PET_TYPE_CAT = 2;
+}
