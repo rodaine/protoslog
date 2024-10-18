@@ -44,8 +44,9 @@ test: $(codegen)
 	$(GO) test $(GO_TEST_FLAGS) ./...
 
 .PHONY: lint
-lint: $(codegen) $(GOLANGCI_LINT)
+lint: $(codegen) $(GOLANGCI_LINT) $(BUF)
 	$(GOLANGCI_LINT) run
+	$(BUF) lint
 
 .PHONY: generate
 generate: $(BUF) $(PGSLOG)

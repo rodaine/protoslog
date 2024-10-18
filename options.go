@@ -150,7 +150,7 @@ func (o options) listValue(field protoreflect.FieldDescriptor, value protoreflec
 		return slog.Value{}
 	}
 	attrs := make([]slog.Attr, length)
-	for i := 0; i < length; i++ {
+	for i := range length {
 		item := value.Get(i)
 		attrs[i].Key = strconv.Itoa(i)
 		attrs[i].Value = o.singularValue(field, item)

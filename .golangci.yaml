@@ -6,27 +6,20 @@ linters:
   enable-all: true
   disable:
     - cyclop # need large switch statements over protreflect.Kind
-    - deadcode # deprecated: replaced by unused
-    - exhaustivestruct # deprecated: replaced by exhaustruct
+    - execinquery # deprecated: archived by owner
     - exhaustruct # zero values of fields should be respected
     - exhaustive # does not treat default as exhaustive
+    - exportloopref # deprecated: no longer relevant, replaced by copyloopvar
     - funlen # redundant with cyclop
     - gocognit # redundant with cyclop
     - gofumpt # prefer standard gofmt
     - goimports # rely on gci instead
-    - golint # deprecated: replaced by revive
-    - ifshort # deprecated
+    - gomnd # deprecated: renamed mnd
     - ireturn # useful for
-    - interfacer # deprecated
     - maintidx # redundant with cyclop
-    - maligned # deprecated: replaced by fieldalignment
     - nlreturn # stylistic choice
     - nonamedreturns # yes, named returns
-    - nosnakecase # deprecated: replaced by revive
-    - scopelint # deprecated: replaced by exportloopref
-    - structcheck # deprecated: replaced by unused
     - testpackage # not necessary
-    - varcheck # deprecated: replaced by unused
     - wsl # stylistic choice
     - wrapcheck # don't always need to wrap errors
 linters-settings:
