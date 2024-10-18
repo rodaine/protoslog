@@ -1,0 +1,11 @@
+version: v2
+modules:
+  - path: internal/proto
+lint:
+  use:
+    - STANDARD
+  except:
+    - PACKAGE_DEFINED
+breaking:
+  use:
+    - FILE

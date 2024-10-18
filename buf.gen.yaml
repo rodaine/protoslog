@@ -1,15 +1,13 @@
-version: v1
+version: v2
 managed:
   enabled: true
-  go_package_prefix:
-    default: github.com/rodaine/protoslog/internal/gen
+  override:
+    - file_option: go_package_prefix
+      value: github.com/rodaine/protoslog/internal/gen
 plugins:
-  - plugin: buf.build/protocolbuffers/go:v1.32.0
+  - remote: buf.build/protocolbuffers/go
     out: internal/gen
-    opt:
-      - paths=source_relative
-  - plugin: slog
-    path: ./.bin/protoc-gen-slog
+    opt: paths=source_relative
+  - local: ./.bin/protoc-gen-slog
     out: internal/gen
-    opt:
-      - paths=source_relative
+    opt: paths=source_relative
