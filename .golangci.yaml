@@ -6,7 +6,6 @@ linters:
   enable-all: true
   disable:
     - cyclop # need large switch statements over protreflect.Kind
-    - execinquery # deprecated: archived by owner
     - exhaustruct # zero values of fields should be respected
     - exhaustive # does not treat default as exhaustive
     - exportloopref # deprecated: no longer relevant, replaced by copyloopvar
@@ -14,7 +13,6 @@ linters:
     - gocognit # redundant with cyclop
     - gofumpt # prefer standard gofmt
     - goimports # rely on gci instead
-    - gomnd # deprecated: renamed mnd
     - ireturn # useful for
     - maintidx # redundant with cyclop
     - nlreturn # stylistic choice
