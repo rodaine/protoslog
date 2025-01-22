@@ -20,6 +20,10 @@ var (
 	unknownValue  = slog.StringValue("UNKNOWN")
 )
 
+// KeyFormatter functions provide a way to alter a [slog.Attr] key depending
+// on the to be logged field of a [protoreflect.Message].
+type KeyFormatter func(key string, fd protoreflect.FieldDescriptor, value protoreflect.Value) string
+
 // Option functions customize generation of a [slog.Value] from a
 // [proto.Message] beyond the default behavior.
 type Option func(o *options)
@@ -61,6 +65,12 @@ func WithAnyResolver(resolver protoregistry.MessageTypeResolver) Option {
 	return func(o *options) { o.AnyResolver = resolver }
 }
 
+// WithKeyFormatter is used to alter a [slog.Attr] key depending
+// on the to be logged field of a [protoreflect.Message].
+func WithKeyFormatter(formatter KeyFormatter) Option {
+	return func(o *options) { o.KeyFormatter = formatter }
+}
+
 type options struct {
 	// DisableRedaction indicates that fields annotated with the debug_redact
 	// option should not be redacted from the slog.Value. When false, redacted
@@ -84,6 +94,10 @@ type options struct {
 	// protoregistry.GlobalTypes is used. If the type cannot be found in the
 	// resolver or if unmarshaling fails, only an "@type" field is emitted.
 	AnyResolver protoregistry.MessageTypeResolver
+
+	// KeyFormatter is used to alter a [slog.Attr] key depending
+	// on the to be logged field of a [protoreflect.Message].
+	KeyFormatter KeyFormatter
 }
 
 func newOptions(opts []Option) (o options) {
@@ -101,6 +115,9 @@ func mergeOptions(base, other options) (o options) {
 	o.AnyResolver = base.AnyResolver
 	if other.AnyResolver != nil {
 		o.AnyResolver = other.AnyResolver
+	}
+	if other.KeyFormatter != nil {
+		o.KeyFormatter = other.KeyFormatter
 	}
 	return o
 }
@@ -139,7 +156,11 @@ func (o options) MessageValue(msg protoreflect.Message) slog.Value {
 		default:
 			val = o.singularValue(field, msg.Get(field))
 		}
-		attrs = append(attrs, slog.Attr{Key: string(field.Name()), Value: val})
+		key := string(field.Name())
+		if o.KeyFormatter != nil {
+			key = o.KeyFormatter(key, field, msg.Get(field))
+		}
+		attrs = append(attrs, slog.Attr{Key: key, Value: val})
 	}
 	return slog.GroupValue(attrs...)
 }

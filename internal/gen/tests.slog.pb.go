@@ -41,3 +41,18 @@ func (msg *OuterNested) LogValue() slog.Value {
 func (msg *OuterNested_InnerNested) LogValue() slog.Value {
 	return protoslog.MessageValue(msg)
 }
+
+// LogValue satisfies the [slog.LogValuer] interface.
+func (msg *Event) LogValue() slog.Value {
+	return protoslog.MessageValue(msg)
+}
+
+// LogValue satisfies the [slog.LogValuer] interface.
+func (msg *PayloadA) LogValue() slog.Value {
+	return protoslog.MessageValue(msg)
+}
+
+// LogValue satisfies the [slog.LogValuer] interface.
+func (msg *PayloadB) LogValue() slog.Value {
+	return protoslog.MessageValue(msg)
+}

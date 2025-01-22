@@ -1,8 +1,10 @@
 package protoslog_test
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -10,7 +12,7 @@ import (
 	pb "github.com/rodaine/protoslog/internal/gen"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -196,15 +198,13 @@ func TestMessageValue(t *testing.T) {
 		dur := durationpb.New(5 * time.Minute)
 		testMessageValue(t, "duration", dur, slog.DurationValue(dur.AsDuration()))
 
-		anyMsg, err := anypb.New(&pb.Singulars{Bool: true})
-		require.NoError(t, err)
+		anyMsg := makeAny(t, &pb.Singulars{Bool: true})
 		testMessageValue(t, "any", anyMsg, slog.GroupValue(
 			slog.String("@type", anyMsg.GetTypeUrl()),
 			slog.Bool("bool", true),
 		))
 
-		anyWkt, err := anypb.New(now)
-		require.NoError(t, err)
+		anyWkt := makeAny(t, now)
 		testMessageValue(t, "any_wkt", anyWkt, slog.GroupValue(
 			slog.String("@type", anyWkt.GetTypeUrl()),
 			slog.Time("@value", now.AsTime()),
@@ -240,6 +240,75 @@ func TestMessageValue(t *testing.T) {
 			slog.String("bar", "baz"),
 			slog.Bool("foo", true),
 			slog.Attr{Key: "quux"},
+		))
+	})
+
+	t.Run("key-formatter", func(t *testing.T) {
+		t.Parallel()
+
+		keyFormatterFn := func(key string, fd protoreflect.FieldDescriptor, val protoreflect.Value) string {
+			if fd.Kind() != protoreflect.MessageKind {
+				return key
+			}
+
+			if val.Message().Descriptor().FullName() != "google.protobuf.Any" {
+				return key
+			}
+
+			typeDesc := val.Message().Descriptor().Fields().ByName("type_url")
+			typeURL := val.Message().Get(typeDesc).String()
+			return fmt.Sprintf(
+				"%s[%s]",
+				key,
+				strings.TrimPrefix(typeURL, "type.googleapis.com/"),
+			)
+		}
+
+		payloadA := makeAny(t, &pb.PayloadA{Id: "some-string-based-id"})
+		payloadB := makeAny(t, &pb.PayloadB{Id: uint64(123)})
+
+		now := timestamppb.Now()
+
+		testMessageValue(t, "with_formatter", &pb.Event{Payload: payloadA, Timestamp: now}, slog.GroupValue(
+			slog.Attr{
+				Key: "payload[PayloadA]",
+				Value: slog.GroupValue(
+					slog.String("@type", payloadA.GetTypeUrl()),
+					slog.String("id", "some-string-based-id"),
+				),
+			},
+			slog.Time("timestamp", now.AsTime()),
+		), protoslog.WithKeyFormatter(keyFormatterFn))
+		testMessageValue(t, "with_formatter", &pb.Event{Payload: payloadB, Timestamp: now}, slog.GroupValue(
+			slog.Attr{
+				Key: "payload[PayloadB]",
+				Value: slog.GroupValue(
+					slog.String("@type", payloadB.GetTypeUrl()),
+					slog.Uint64("id", 123),
+				),
+			},
+			slog.Time("timestamp", now.AsTime()),
+		), protoslog.WithKeyFormatter(keyFormatterFn))
+
+		testMessageValue(t, "without_formatter", &pb.Event{Payload: payloadA, Timestamp: now}, slog.GroupValue(
+			slog.Attr{
+				Key: "payload",
+				Value: slog.GroupValue(
+					slog.String("@type", payloadA.GetTypeUrl()),
+					slog.String("id", "some-string-based-id"),
+				),
+			},
+			slog.Time("timestamp", now.AsTime()),
+		))
+		testMessageValue(t, "without_formatter", &pb.Event{Payload: payloadB, Timestamp: now}, slog.GroupValue(
+			slog.Attr{
+				Key: "payload",
+				Value: slog.GroupValue(
+					slog.String("@type", payloadB.GetTypeUrl()),
+					slog.Uint64("id", 123),
+				),
+			},
+			slog.Time("timestamp", now.AsTime()),
 		))
 	})
 }

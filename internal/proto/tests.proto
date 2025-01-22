@@ -1,5 +1,8 @@
 syntax = "proto3";
 
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
 enum Enum {
   ENUM_UNSPECIFIED = 0;
   ENUM_ONE = 1;
@@ -51,4 +54,17 @@ message Redaction {
 
 message OuterNested {
   message InnerNested {}
+}
+
+message Event {
+  google.protobuf.Any payload = 1;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message PayloadA {
+  string id = 1;
+}
+
+message PayloadB {
+  uint64 id = 1;
 }
