@@ -5,11 +5,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/rodaine/protoslog"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	"github.com/rodaine/protoslog"
 )
 
 func slogHandler() slog.Handler {

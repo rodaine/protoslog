@@ -8,8 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rodaine/protoslog"
-	pb "github.com/rodaine/protoslog/internal/gen"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -17,10 +15,13 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
+
+	"github.com/rodaine/protoslog"
+	pb "github.com/rodaine/protoslog/internal/gen"
 )
 
 func TestMain(m *testing.M) {
-	time.Local = time.UTC
+	time.Local = time.UTC //nolint:gosmopolitan // ensures tests behave the same no matter the locale
 	os.Exit(m.Run())
 }
 

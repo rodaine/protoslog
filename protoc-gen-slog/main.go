@@ -1,3 +1,4 @@
+// Package main is the protoc-gen-slog plugin
 package main
 
 import (

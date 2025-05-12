@@ -1,44 +1,46 @@
-run:
-  timeout: 5m
-output:
-  sort-results: true
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
-    - cyclop # need large switch statements over protreflect.Kind
-    - exhaustruct # zero values of fields should be respected
-    - exhaustive # does not treat default as exhaustive
-    - exportloopref # deprecated: no longer relevant, replaced by copyloopvar
+    - cyclop # need large switch statements over protoreflect.Kind
+    - exhaustive # zero values of fields should be respected
+    - exhaustruct # does not treat default as exhaustive
     - funlen # redundant with cyclop
     - gocognit # redundant with cyclop
-    - gofumpt # prefer standard gofmt
-    - goimports # rely on gci instead
-    - ireturn # useful for
+    - ireturn # required to satisfy slog.Handler interface
     - maintidx # redundant with cyclop
     - nlreturn # stylistic choice
     - nonamedreturns # yes, named returns
     - testpackage # not necessary
-    - wsl # stylistic choice
     - wrapcheck # don't always need to wrap errors
-linters-settings:
-  nolintlint:
-    require-specific: true
-    require-explanation: true
-    allow-unused: false
-  depguard:
+    - wsl # stylistic choice
+  settings:
+    depguard:
+      rules:
+        main:
+          files:
+            - $all
+          deny:
+            - pkg: ^log$
+              desc: use log/slog exclusively
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+      allow-unused: false
+  exclusions:
+    generated: lax
     rules:
-      main:
-        files: [$all]
-        deny:
-          - pkg: "^log$"
-            desc: use log/slog exclusively
-issues:
-  exclude-rules:
-    # loosen restrictions on test code
-    - path: '_test.go$'
-      linters:
-        - cyclop
-        - dupl
-        - varnamelen
-        - funlen
-        - lll
+      - linters:
+          - dupl
+          - lll
+          - varnamelen
+        path: _test.go$
+formatters:
+  enable:
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/rodaine/protoslog
+  exclusions:
+    generated: lax
