@@ -7,11 +7,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rodaine/protoslog"
-	pb "github.com/rodaine/protoslog/internal/gen"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/durationpb"
+
+	"github.com/rodaine/protoslog"
+	pb "github.com/rodaine/protoslog/internal/gen"
 )
 
 func TestHandler_Enabled(t *testing.T) {

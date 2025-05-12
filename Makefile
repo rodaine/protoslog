@@ -69,7 +69,7 @@ $(PGSLOG): $(shell find ./protoc-gen-slog)
 
 $(GOLANGCI_LINT): export GOBIN=$(abspath .bin)
 $(GOLANGCI_LINT):
-	$(GO) install github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION) \
+	$(GO) install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION) \
 	&& mv $(GOBIN)/golangci-lint $@
 
 $(BUF): export GOBIN=$(abspath .bin)
