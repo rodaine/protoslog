@@ -3,6 +3,7 @@ package protoslog
 import (
 	"context"
 	"log/slog"
+	"slices"
 
 	"google.golang.org/protobuf/proto"
 )
@@ -72,8 +73,12 @@ func (h Handler) wrapAttrs(attrs []slog.Attr) {
 func (h Handler) wrapAttr(attr slog.Attr) slog.Attr {
 	switch attr.Value.Kind() {
 	case slog.KindGroup:
-		h.wrapAttrs(attr.Value.Group())
-		return attr
+		attrs := slices.Clone(attr.Value.Group())
+		h.wrapAttrs(attrs)
+		return slog.Attr{
+			Key:   attr.Key,
+			Value: slog.GroupValue(attrs...),
+		}
 	case slog.KindAny, slog.KindLogValuer:
 		switch msg := attr.Value.Any().(type) {
 		case proto.Message:
