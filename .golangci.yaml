@@ -14,6 +14,7 @@ linters:
     - testpackage # not necessary
     - wrapcheck # don't always need to wrap errors
     - wsl # stylistic choice
+    - wsl_v5 # stylistic choice
   settings:
     depguard:
       rules:
