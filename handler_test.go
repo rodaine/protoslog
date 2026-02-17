@@ -18,10 +18,12 @@ import (
 func TestHandler_Enabled(t *testing.T) {
 	t.Parallel()
 
-	handler := protoslog.NewHandler(slog.NewTextHandler(
+	//nolint:sloglint // not using slog.DiscardHandler, since we're testing Enabled
+	discard := slog.NewTextHandler(
 		io.Discard,
 		&slog.HandlerOptions{Level: slog.LevelInfo},
-	))
+	)
+	handler := protoslog.NewHandler(discard)
 
 	assert.True(t, handler.Enabled(context.Background(), slog.LevelInfo))
 	assert.False(t, handler.Enabled(context.Background(), slog.LevelDebug))
