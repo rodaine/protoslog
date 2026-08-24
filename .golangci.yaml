@@ -5,8 +5,10 @@ linters:
     - cyclop # need large switch statements over protoreflect.Kind
     - exhaustive # zero values of fields should be respected
     - exhaustruct # does not treat default as exhaustive
+    - exhaustruct_v5
     - funlen # redundant with cyclop
     - gocognit # redundant with cyclop
+    - gomodguard
     - ireturn # required to satisfy slog.Handler interface
     - maintidx # redundant with cyclop
     - nlreturn # stylistic choice
@@ -33,6 +35,7 @@ linters:
     rules:
       - linters:
           - dupl
+          - goconst
           - lll
           - varnamelen
         path: _test.go$
